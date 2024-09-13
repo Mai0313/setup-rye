@@ -11,9 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Install Rye and Copy Config
         uses: mai0313/setup-rye@v1.0.1
         with:
