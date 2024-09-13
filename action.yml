@@ -43,9 +43,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
     - name: Install Rye
       shell: bash
       env:
@@ -63,7 +60,7 @@ runs:
     - name: Copy Config
       shell: bash
       run: |
-        cp ${{ github.workspace }}/configs/config.toml $HOME/.rye/
+        cp $GITHUB_ACTION_PATH/configs/config.toml $HOME/.rye/
 
     - name: Set Proxy
       shell: bash
