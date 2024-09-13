@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Install Rye and Copy Config
-        uses: mai0313/setup-rye@v1.0.1
+        uses: mai0313/setup-rye@master
         with:
           version: latest
           toolchain_version: '3.10'
