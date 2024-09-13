@@ -2,6 +2,10 @@
 
 This GitHub Action installs the Rye programming language and copies a configuration file into the Rye directory.
 
+## Highlights
+
+This action supports across all platforms, including Windows, macOS, and Linux.
+
 ## Inputs
 
 ### `version`

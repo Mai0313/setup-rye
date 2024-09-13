@@ -8,7 +8,14 @@ on:
 jobs:
   setup-rye:
     name: Setup Rye
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: 
+          - ubuntu-latest
+          - macos-latest
+          # - windows-latest
 
     steps:
       - name: Setup Rye

@@ -43,47 +43,46 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Install Rye
+    - name: Install Rye on Linux
+      if: runner.os == 'Linux'
       shell: bash
       env:
         RYE_VERSION: ${{ inputs.version }}
         RYE_INSTALL_OPTION: '--yes'
         RYE_TOOLCHAIN_VERSION: ${{ inputs.toolchain_version }}
+        HTTP_PROXY: ${{ inputs.http_proxy }}
+        HTTPS_PROXY: ${{ inputs.https_proxy }}
+        USE_UV: ${{ inputs.use-uv }}
+        PYPI_SOURCE: ${{ inputs.pypi_source }}
       run: |
-        curl -sSf https://rye.astral.sh/get | bash
+        chmod +x $GITHUB_ACTION_PATH/scripts/install_ubuntu.sh
+        $GITHUB_ACTION_PATH/scripts/install_ubuntu.sh
 
-    - name: setup rye path
+    - name: Install Rye on macOS
+      if: runner.os == 'macOS'
       shell: bash
+      env:
+        RYE_VERSION: ${{ inputs.version }}
+        RYE_INSTALL_OPTION: '--yes'
+        RYE_TOOLCHAIN_VERSION: ${{ inputs.toolchain_version }}
+        HTTP_PROXY: ${{ inputs.http_proxy }}
+        HTTPS_PROXY: ${{ inputs.https_proxy }}
+        USE_UV: ${{ inputs.use-uv }}
+        PYPI_SOURCE: ${{ inputs.pypi_source }}
       run: |
-        echo "$HOME/.rye/shims" >> $GITHUB_PATH
+        chmod +x $GITHUB_ACTION_PATH/scripts/install_macos.sh
+        $GITHUB_ACTION_PATH/scripts/install_macos.sh
 
-    - name: Copy Config
-      shell: bash
+    - name: Install Rye on Windows
+      if: runner.os == 'Windows'
+      shell: pwsh
+      env:
+        RYE_VERSION: 0.39.0
+        RYE_INSTALL_OPTION: '--yes'
+        RYE_TOOLCHAIN_VERSION: ${{ inputs.toolchain_version }}
+        HTTP_PROXY: ${{ inputs.http_proxy }}
+        HTTPS_PROXY: ${{ inputs.https_proxy }}
+        USE_UV: ${{ inputs.use-uv }}
+        PYPI_SOURCE: ${{ inputs.pypi_source }}
       run: |
-        cp $GITHUB_ACTION_PATH/configs/config.toml $HOME/.rye/
-
-    - name: Set Proxy
-      shell: bash
-      run: |
-        if [ -n "${{ inputs.http_proxy }}" ]; then
-          rye config --set proxy.http=${{ inputs.http_proxy }}
-        fi
-        if [ -n "${{ inputs.https_proxy }}" ]; then
-          rye config --set proxy.https=${{ inputs.https_proxy }}
-        fi
-
-    - name: setup uv behavior
-      shell: bash
-      if: ${{ inputs.use-uv == 'true' }}
-      run: |
-        rye config --set-bool behavior.use-uv=true
-
-    - name: Setup Pypi Mirror
-      shell: bash
-      run: |
-        sed -i 's|url = "https://pypi.org/simple"|url = "${{ inputs.pypi_source }}"|' $HOME/.rye/config.toml
-
-    - name: Check Rye Config
-      shell: bash
-      run: |
-        cat $HOME/.rye/config.toml
+        & "$env:GITHUB_ACTION_PATH\scripts\install_windows.ps1"
