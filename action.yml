@@ -1,0 +1,89 @@
+name: setup astral rye
+
+description: This action sets up Rye (astral-sh/rye) for use in actions.
+author: '@mai0313'
+branding:
+  icon: arrow-down
+  color: green
+
+inputs:
+  version:
+    description: 'The version of Rye to install'
+    required: false
+    default: 'latest'
+
+  toolchain_version:
+    description: 'The version of the Rye toolchain to install'
+    required: false
+    default: '3.10'
+
+  python_version:
+    description: 'The version of Python to use'
+    required: false
+    default: '3.10'
+
+  use-uv:
+    description: behavior use use
+    required: false
+    default: 'true'
+
+  pypi_source:
+    description: 'The source of Pypi'
+    required: false
+    default: 'https://pypi.org/simple'
+
+  http_proxy:
+    description: 'The http proxy to use'
+    required: false
+
+  https_proxy:
+    description: 'The https proxy to use'
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Rye
+      shell: bash
+      env:
+        RYE_VERSION: ${{ inputs.version }}
+        RYE_INSTALL_OPTION: '--yes'
+        RYE_TOOLCHAIN_VERSION: ${{ inputs.toolchain_version }}
+      run: |
+        curl -sSf https://rye.astral.sh/get | bash
+
+    - name: setup rye path
+      shell: bash
+      run: |
+        echo "$HOME/.rye/shims" >> $GITHUB_PATH
+
+    - name: Copy Config
+      shell: bash
+      run: |
+        cp ${{ github.workspace }}/configs/config.toml $HOME/.rye/
+
+    - name: Set Proxy
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.http_proxy }}" ]; then
+          rye config --set proxy.http=${{ inputs.http_proxy }}
+        fi
+        if [ -n "${{ inputs.https_proxy }}" ]; then
+          rye config --set proxy.https=${{ inputs.https_proxy }}
+        fi
+
+    - name: setup uv behavior
+      shell: bash
+      if: ${{ inputs.use-uv == 'true' }}
+      run: |
+        rye config --set-bool behavior.use-uv=true
+
+    - name: Setup Pypi Mirror
+      shell: bash
+      run: |
+        sed -i 's|url = "https://pypi.org/simple"|url = "${{ inputs.pypi_source }}"|' $HOME/.rye/config.toml
+
+    - name: Check Rye Config
+      shell: bash
+      run: |
+        cat $HOME/.rye/config.toml
