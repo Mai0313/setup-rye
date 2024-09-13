@@ -49,8 +49,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Rye and Copy Config
-        uses: mai0313/setup-rye@v1.0.2
+      - name: Setup Rye
+        uses: mai0313/setup-rye@v1.0.3
         with:
           version: 'latest' # Optional, default is latest
           toolchain_version: '3.10' # Optional, default is 3.10

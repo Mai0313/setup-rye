@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install Rye and Copy Config
+      - name: Setup Rye
         uses: mai0313/setup-rye@master
         with:
           version: latest
